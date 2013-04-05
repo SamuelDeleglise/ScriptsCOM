@@ -4,6 +4,8 @@ from myPandas import *
 from time import sleep
 import pandas
 from hardware import vsa
+from pandas.stats.moments import rolling_mean,rolling_apply
+from numpy import isnan,array
 
 def correlations(name = False):
     df = vsa.data(["Spectrum1","Spectrum2","Cross Spectrum"])
@@ -19,11 +21,30 @@ def correlations(name = False):
 #CsRPN = Csmod*Sshot/Smod
 
 
+
+
 def get_numaverages(df):
     res = set([int(col.rsplit('_',1)[-1]) for col in df.columns])
     res = list(res)
     res.sort()
     return res
+
+def remove_mech_mode(df,thermal_noise = "Spectrum2_007575",window = 1000,exclude_window = 1000,thresholddiff = 3e-8):
+    filtered = df.data[thermal_noise][(df[thermal_noise] - pandas.rolling_mean(df[thermal_noise].data,1000,center = True)).data<0.2e-7]    
+    #filtered = filtered.rename(lambda x:"filtered_"+x)
+    def clean_around(table):
+        if isnan(table).any():
+            return nan
+        else:
+            return table[len(table)/2]
+    filtered.name = "filtered"
+    df.join(filtered)
+    filtered = df["filtered"]
+    filtered = rolling_apply(filtered.data,exclude_window,clean_around,center = True)
+    
+    dfnew = DataFrame(df[-isnan(filtered)])
+    del dfnew["filtered"]
+    return dfnew
 
 
 def calculate_correl(df,fStart,fStop):
@@ -45,10 +66,10 @@ def calculate_cross(df,fStart,fStop):
     num_av = get_numaverages(df)
     m = df[fStart:fStop]
     for av in num_av:
-        coh = m["Cross Spectrum_%06i"%av]/df.meta["Cross Spectrum_%06i"%av].Frequency.ResBW
+        coh = m["Cross_Spectrum_%06i"%av]/df.meta["Cross_Spectrum_%06i"%av].Frequency.ResBW
         coh=coh.mean()
         data+=[coh]
-    return pandas.Series(data,index = num_av)
+    return pandas.Series(array(data),index = array(num_av))
             
 def matched_df():
     df = vsa.data(["Spectrum1"])
