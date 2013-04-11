@@ -12,7 +12,7 @@ import numpy as np
 from guiqwt.builder import make
 from hardware import vsa
 from pandas import HDFStore
-from ScriptsCOM import matched_df,append_one_av,DataFrame,loadH5
+from ScriptsCOM import matched_df,append_one_av,DataFrame,load
 
 
 
@@ -90,11 +90,11 @@ class LoggerDialog(QDialog):
     def manual(self):
         vsa.on_screen.pause()
         try:
-            df = loadH5(self.values.filename)
+            df = load(self.values.filename)
         except IOError:
             df = matched_df()
         append_one_av(df)
-        df.saveAsh5(self.values.filename)
+        df.save(self.values.filename)
         vsa.on_screen.resume()
         
     
