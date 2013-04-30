@@ -66,7 +66,7 @@ def calculate_cross(df,fStart,fStop):
     num_av = get_numaverages(df)
     m = df[fStart:fStop]
     for av in num_av:
-        coh = m["Cross_Spectrum_%06i"%av]/df.meta["Cross_Spectrum_%06i"%av].Frequency.ResBW
+        coh = m["Cross_Spectrum_%06i"%av]/df["Cross_Spectrum_%06i"%av].meta.Frequency.ResBW
         coh=coh.mean()
         data+=[coh]
     return pandas.Series(array(data),index = array(num_av))
@@ -98,11 +98,11 @@ def append_one_av(df):
     #if not isinstance(av,int):
     #    raise ValueError("num averages should be integer")
     #vsa.on_screen.wait_average(av)
-    dft = vsa.data(["Spectrum1","Spectrum2","Cross Spectrum"])
+    dft = vsa.data(["Spectrum1","Spectrum2","Cross_Spectrum"])
     real_av = vsa.on_screen.current_average()
     df["Spectrum1_%06i"%real_av] = dft["Spectrum1"]
     df["Spectrum2_%06i"%real_av] = dft["Spectrum2"]
-    df["Cross Spectrum_%06i"%real_av] = dft["Cross Spectrum"]
+    df["Cross_Spectrum_%06i"%real_av] = dft["Cross_Spectrum"]
     return df
 
 
