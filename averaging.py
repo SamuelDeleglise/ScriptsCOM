@@ -12,7 +12,6 @@ summary = DataFrame()
 figure("Convergence of correlations")
 
 
-
 for width,style,sub in zip(widths,styles,subs):
     df = DataFrame()
     for center in arange(0.9e6,1.8e6,width):

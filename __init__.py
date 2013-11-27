@@ -14,7 +14,6 @@ def correlations(name = False):
     if name : df.saveAsh5(next(name))
     return df, val
     
-
 #Sshot = (dfShot[1200000.0:1400000].mean())**2
 #Smod = 0.08**2
 #Csmod = df["Cross Spectrum"][1400000.0:1400100.0].mean()
